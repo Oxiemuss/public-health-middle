@@ -1,0 +1,18 @@
+/* 1. ย้าย @import ทุกอย่างมาไว้บนสุดของไฟล์ */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap');
+@import 'tailwindcss';
+
+/* 2. การตั้งค่า Theme (ถ้ามี) */
+@theme {
+  --font-sans: 'Kanit', sans-serif;
+}
+
+/* 3. กฎการใช้งานทั่วไป */
+@layer base {
+  html, body {
+    font-family: 'Kanit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* --- โค้ดอื่นๆ ที่เหลือให้ต่อท้ายลงไปด้านล่างนี้ให้หมด --- */
