@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "public": false,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "runtime": "vercel-node@latest",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+}
