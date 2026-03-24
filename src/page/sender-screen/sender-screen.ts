@@ -27,7 +27,7 @@ export class SenderScreen implements OnInit {
   idCardPreview: string | null = null;
 
   // ตั้งค่ารหัสสถานพยาบาลตามที่ระบุ
-  readonly FROM_HCODE = '08216';
+  readonly FROM_HCODE = '08231';
   readonly TO_HCODE = '11291';
 
   ngOnInit() {
