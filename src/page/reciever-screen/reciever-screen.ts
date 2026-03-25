@@ -1,55 +1,75 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReferCase } from '../../app/services/interface/refer.model';
 import { Refer } from '../../app/services/refer/refer';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-reciever-screen',
   standalone: true,
   templateUrl: './reciever-screen.html',
-  imports: [
-    CommonModule, DatePipe , FormsModule ,
-  ],
+  imports: [CommonModule, DatePipe, FormsModule],
 })
 export class RecieverScreen implements OnInit {
   private referService = inject(Refer);
+  private cdr = inject(ChangeDetectorRef);
+
+  private stopLoading() {
+    this.loading = false;
+    this.isUpdating = false;
+    this.cdr.detectChanges();
+  }
 
   referCase: ReferCase[] = [];
-  filteredCase: ReferCase [] = [];
+  filteredCase: ReferCase[] = [];
   loading = false;
-  todayCount = 0;
-  searchTerm :string = "";
-
+  isUpdating = false;
+  caseCount = 0;
+  searchTerm: string = '';
 
   ngOnInit() {
-    this.loadReferrals();
+    const cache = this.referService.getCacheData();
+
+    if (cache && cache.length > 0) {
+      this.referCase = cache;
+      this.filteredCase = [...cache];
+      this.loading = false;
+      this.calculateCaseCount();
+      this.cdr.detectChanges();
+      this.stopLoading();
+    } else {
+      this.loadReferrals();
+    }
   }
 
-  loadReferrals() {
-    this.loading = true;
-    this.referService.getAllReferData().subscribe({
-      next: (data) => {
-        this.referCase = data;
-        this.filteredCase = data;
-        // console.log('✅ ข้อมูลที่ได้จาก API:', data);
-        this.calculateTodayCount();
-        
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-      },
-    });
+  loadReferrals(isManual = false) {
+    if (isManual) {
+      this.isUpdating = true; 
+      setTimeout(() => {
+        this.stopLoading();
+      }, 2000);
+    } else {
+      this.loading = true; 
+    }
+    this.referService
+      .getAllReferData()
+      .pipe(finalize(() => this.stopLoading()))
+      .subscribe({
+        next: (data) => {
+          this.referCase = data;
+          this.filteredCase = [...data];
+          this.calculateCaseCount();
+        },
+        error: (err) => {
+          console.error(err);
+          this.stopLoading();
+        },
+      });
   }
 
-  calculateTodayCount() {
-    const today = new Date().toDateString();
-    this.todayCount = this.referCase.filter(item => 
-      new Date(item.created_at).toDateString() === today && 
-      item.status === 'pending'
-    ).length;
+  calculateCaseCount() {
+    this.caseCount = this.referCase.filter((item) => item.status === 'pending').length;
   }
 
   viewImages(item: ReferCase) {
@@ -65,18 +85,15 @@ export class RecieverScreen implements OnInit {
     }
   }
 
-  onSearch(){
+  onSearch() {
     const search = this.searchTerm.trim().toLocaleLowerCase();
     if (!search) {
-      this.filteredCase = [...this.referCase]
+      this.filteredCase = [...this.referCase];
       return;
     }
 
-    this.filteredCase = this.referCase.filter(item => 
-    
-      item.cid.includes(search) || 
-      item.patient_name.toLowerCase().includes(search)
+    this.filteredCase = this.referCase.filter(
+      (item) => item.cid.includes(search) || item.patient_name.toLowerCase().includes(search),
     );
   }
-  
 }

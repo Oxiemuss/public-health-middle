@@ -1,21 +1,30 @@
 import { NgModule } from '@angular/core';
-import { RouterModule,Routes} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { LoginScreen } from '../page/login-screen/login-screen';
 import { SenderScreen } from '../page/sender-screen/sender-screen';
 import { RecieverScreen } from '../page/reciever-screen/reciever-screen';
 import { HisScreen } from '../page/his-screen/his-screen';
+import { HcScreen } from '../page/hc-screen/hc-screen';
+import { Layout } from '../page/layout/layout';
 
 export const routes: Routes = [
-  { path: '', redirectTo:'login', pathMatch:'full' }, 
-  { path: 'login', component: LoginScreen},
-  { path: 'sender', component: SenderScreen},
-  { path: 'reciever', component: RecieverScreen},
-  { path: 'history', component: HisScreen},
-  { path: '**', redirectTo: 'login' }               
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginScreen },
+  { path: 'sender', component: SenderScreen },
+  {
+    path: '',
+    component: Layout,
+    children: [
+      { path: 'reciever', component: RecieverScreen },
+      { path: 'history', component: HisScreen },
+      { path: 'hclist', component: HcScreen },
+    ],
+  },
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
