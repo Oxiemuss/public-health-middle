@@ -4,12 +4,13 @@ import { Refer } from '../../app/services/refer/refer';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { ReferDetail } from '../refer-detail/refer-detail';
 
 @Component({
   selector: 'app-reciever-screen',
   standalone: true,
   templateUrl: './reciever-screen.html',
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, ReferDetail],
 })
 export class RecieverScreen implements OnInit {
   private referService = inject(Refer);
@@ -20,7 +21,7 @@ export class RecieverScreen implements OnInit {
     this.isUpdating = false;
     this.cdr.detectChanges();
   }
-
+  selectedCase: ReferCase | null = null;
   referCase: ReferCase[] = [];
   filteredCase: ReferCase[] = [];
   loading = false;
@@ -45,12 +46,12 @@ export class RecieverScreen implements OnInit {
 
   loadReferrals(isManual = false) {
     if (isManual) {
-      this.isUpdating = true; 
+      this.isUpdating = true;
       setTimeout(() => {
         this.stopLoading();
       }, 2000);
     } else {
-      this.loading = true; 
+      this.loading = true;
     }
     this.referService
       .getAllReferData()
@@ -72,17 +73,16 @@ export class RecieverScreen implements OnInit {
     this.caseCount = this.referCase.filter((item) => item.status === 'pending').length;
   }
 
-  viewImages(item: ReferCase) {
-    // แนะนำ: ใช้ SweetAlert2 จะสวยมากครับพี่
-    console.log('ดูรูปของ:', item.patient_name);
-    const imgUrl = `https://uazidviekztmbrawgeab.supabase.co/storage/v1/object/public/refer-images/${item.refer_pic}`;
-    window.open(imgUrl, '_blank');
-  }
+  // viewImages(item: ReferCase) {
+  //   // แนะนำ: ใช้ SweetAlert2 จะสวยมากครับพี่
+  //   console.log('ดูรูปของ:', item.patient_name);
+  //   const imgUrl = `https://uazidviekztmbrawgeab.supabase.co/storage/v1/object/public/refer-images/${item.refer_pic}`;
+  //   window.open(imgUrl, '_blank');
+  // }
 
-  acceptCase(item: ReferCase) {
-    if (confirm(`ยืนยันการรับเคสคุณ ${item.patient_name}?`)) {
-      // TODO: เรียก Service updateStatus(item.rid, 'approved')
-    }
+  handleAcceptCase(item: ReferCase) {
+    console.log('ยืนยันรับเคสไอดี:', item.rid);
+    this.selectedCase = null; 
   }
 
   onSearch() {

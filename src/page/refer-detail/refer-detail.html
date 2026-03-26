@@ -1,0 +1,97 @@
+<div
+  class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
+>
+  <div
+    class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300"
+  >
+    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+      <h3 class="text-xl font-bold text-slate-800 italic">รายละเอียด</h3>
+
+      <button
+        (click)="onClose.emit()"
+        class="group flex items-center justify-center w-9 h-9 text-slate-400 hover:bg-red-100 border border-slate-200 hover:border-red-200 rounded-xl transition-all active:scale-90 shadow-sm"
+      >
+        <img src="x-solid-full.svg" class="w-3.5 h-3.5 object-contain opacity-70 cursor-pointer" alt="close" />
+      </button>
+    </div>
+
+    <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-2xl">
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">👤 ชื่อ-นามสกุล</p>
+          <p class="font-bold text-slate-800 text-xl">{{ item.patient_name }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">🆔 เลขบัตรประชาชน</p>
+          <p class="font-semibold text-slate-700 ">{{ item.cid }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">📆 วันเกิด</p>
+          <p class="font-semibold text-slate-700 text-base">{{ item.birth_date }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">📞 เบอร์โทรศัพท์</p>
+          <p class="font-semibold text-blue-600 text-base ">{{ item.tel }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">🏥 ส่งมาจาก</p>
+          <p class="font-semibold text-slate-700 text-base">{{ item.from_hospital_name }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wider">⌚ เวลาที่ส่ง</p>
+          <p class="font-semibold text-slate-700 text-base ">
+            {{ item.created_at | date: 'dd/MM/yyyy HH:mm' }} น.
+          </p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div *ngIf="item.refer_pic" class="space-y-2">
+          <p class="text-sm font-semibold text-slate-600">📄 ใบส่งตัว(Refer)</p>
+          <div
+            class="group relative overflow-hidden rounded-xl border border-slate-200 shadow-sm cursor-zoom-in"
+          >
+            <img
+              [src]="
+                'https://uazidviekztmbrawgeab.supabase.co/storage/v1/object/public/refer-images/' +
+                item.refer_pic
+              "
+              class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+
+        <div *ngIf="item.cid_pic" class="space-y-2">
+          <p class="text-sm font-semibold text-slate-600">🪪 บัตรประชาชน</p>
+          <div
+            class="group relative overflow-hidden rounded-xl border border-slate-200 shadow-sm cursor-zoom-in"
+          >
+            <img
+              [src]="
+                'https://uazidviekztmbrawgeab.supabase.co/storage/v1/object/public/refer-images/' +
+                item.cid_pic
+              "
+              class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3"
+    >
+      <button
+        (click)="onClose.emit()"
+        class="order-2 sm:order-1 px-6 py-2.5 rounded-xl font-semibold bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 cursor-pointer"
+      >
+        ยกเลิก
+      </button>
+      <button
+        (click)="onAccept.emit(item)"
+        class="order-1 sm:order-2 px-8 py-2.5 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-200 transition-all active:scale-95 cursor-pointer"
+      >
+        ยืนยันรับเคส
+      </button>
+    </div>
+  </div>
+</div>

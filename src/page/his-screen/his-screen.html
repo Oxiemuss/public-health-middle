@@ -5,14 +5,36 @@
         <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
         <h3 class="font-bold text-slate-800">ประวัติการทำรายการ</h3>
       </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <button
+          (click)="loadReferrals(true)"
+          [disabled]="isUpdating"
+          class="relative flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm overflow-hidden"
+          title="รีเฟรชข้อมูล"
+        >
+          <img
+            src="arrows-rotate-solid-full.svg"
+            [class.animate-spin]="isUpdating"
+            class="w-5 h-5 opacity-70 transition-opacity group-hover:opacity-100"
+            alt="refresh"
+          />
+        </button>
 
-      <!-- <input
-              type="text"
-              [(ngModel)]="searchTerm"
-              placeholder="ค้นหา"
-              (input)="onSearch()"
-              class="text-sm border border-slate-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-            /> -->
+        <div class="relative flex-1 sm:w-64">
+          <img
+            src="magnifying-glass-solid-full.svg"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40"
+            alt="search"
+          />
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="ค้นหาชื่อ หรือเลขบัตร..."
+            (input)="onSearch()"
+            class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50"
+          />
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-left">
@@ -21,55 +43,45 @@
             <th class="p-4">เวลาที่ส่ง</th>
             <th class="p-4">ชื่อ-นามสกุล</th>
             <th class="p-4">รพ.สต. ต้นทาง</th>
-            <th class="p-4 text-center">หลักฐาน</th>
-            <th class="p-4 text-center">จัดการ</th>
+            <th class="p-4 text-center">ข้อมูล</th>
+            <th class="p-4 text-center">สถานะ</th>
           </tr>
         </thead>
-        <!-- <tbody class="divide-y divide-slate-50">
-                <tr
-                  *ngFor="let item of filteredCase"
-                  class="hover:bg-slate-50/80 transition-colors cursor-pointer group"
-                >
-                  <td class="p-4 text-sm text-slate-500">
-                    {{ item.created_at | date: 'HH:mm' }} น.
-                  </td>
-                  <td class="p-4">
-                    <div class="font-bold text-slate-800">{{ item.patient_name }}</div>
-                    <div class="text-xs text-slate-400">เลขประจำตัวบัตรประชาชน: {{ item.cid }}</div>
-                  </td>
-                  <td class="p-4 text-sm text-slate-600">
-                    {{ item.from_hospital_name }}
-                  </td>
-                  <td class="p-4 text-center">
-                    <button
-                      (click)="viewImages(item)"
-                      class="text-blue-600 font-semibold hover:bg-blue-50 px-3 py-1 rounded-lg transition text-sm"
-                    >
-                      <i class="fas fa-image mr-1"></i> ดูหลักฐาน
-                    </button>
-                  </td>
-                  <td class="p-4 text-right">
-                    <button
-                      (click)="acceptCase(item)"
-                      class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-emerald-100 transition-transform active:scale-95"
-                    >
-                      รับเคส
-                    </button>
-                  </td>
-                </tr>
+        <tbody class="divide-y divide-slate-50">
+          <tr
+            *ngFor="let item of filteredCase"
+            class="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+          >
+            <td class="p-4 text-sm text-slate-500">{{ item.created_at | date: ' dd/MM/yyyy HH:mm' }} น.</td>
+            <td class="p-4">
+              <div class="font-bold text-slate-800">{{ item.patient_name }}</div>
+              <div class="text-xs text-slate-400">เลขประจำตัวบัตรประชาชน: {{ item.cid }}</div>
+            </td>
+            <td class="p-4 text-sm text-slate-600">
+              {{ item.from_hospital_name }}
+            </td>
+            <td class="p-4 text-center">
+              <button
+                
+                class="text-blue-600 font-semibold hover:bg-blue-50 px-3 py-1 rounded-lg transition text-sm"
+              >
+                <i class="fas fa-image mr-1"></i> ดูรายละเอียด
+              </button>
+            </td>
+            <td class="p-4 text-md text-center">{{ item.status}}
+            </td>
+          </tr>
 
-                <tr *ngIf="referCase.length === 0 && !loading">
-                  <td colspan="5" class="p-10 text-center text-slate-400">
-                    ไม่มีรายการรับเข้าในขณะนี้
-                  </td>
-                </tr>
+          <tr *ngIf="referCase.length === 0 && !loading">
+            <td colspan="5" class="p-10 text-center text-slate-400">ไม่มีรายการรับเข้าในขณะนี้</td>
+          </tr>
 
-                <tr *ngIf="referCase.length > 0 && filteredCase.length === 0 && !loading">
-                  <td colspan="5" class="p-10 text-center text-slate-400">
-                    ไม่พบข้อมูลที่ตรงกับคำค้นหา "{{ searchTerm }}"
-                  </td>
-                </tr>
-              </tbody> -->
+          <tr *ngIf="referCase.length > 0 && filteredCase.length === 0 && !loading">
+            <td colspan="5" class="p-10 text-center text-slate-400">
+              ไม่พบข้อมูลที่ตรงกับคำค้นหา "{{ searchTerm }}"
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>

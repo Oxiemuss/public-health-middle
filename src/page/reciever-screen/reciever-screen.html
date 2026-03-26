@@ -55,7 +55,6 @@
               <th class="p-4">ชื่อ-นามสกุล</th>
               <th class="p-4">รพ.สต. ต้นทาง</th>
               <th class="p-4 text-center">ข้อมูล</th>
-              <th class="p-4 text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
@@ -64,7 +63,7 @@
               class="hover:bg-slate-50/80 transition-colors cursor-pointer group"
             >
               <td class="p-4 text-sm text-slate-500">
-                {{ item.created_at | date: 'dd/MM/yy HH:mm' }} น.
+                {{ item.created_at | date: 'dd/MM/yyyy HH:mm' }} น.
               </td>
               <td class="p-4">
                 <div class="font-bold text-slate-800">{{ item.patient_name }}</div>
@@ -75,18 +74,10 @@
               </td>
               <td class="p-4 text-center">
                 <button
-                  (click)="viewImages(item)"
-                  class="text-blue-600 font-semibold hover:bg-blue-50 px-3 py-1 rounded-lg transition text-sm"
+                  (click)="selectedCase = item"
+                  class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-emerald-100 transition-transform active:scale-95 cursor-pointer"
                 >
-                  <i class="fas fa-image mr-1"></i> ดูข้อมูล
-                </button>
-              </td>
-              <td class="p-4 text-right">
-                <button
-                  (click)="acceptCase(item)"
-                  class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-emerald-100 transition-transform active:scale-95"
-                >
-                  รับเคส
+                  ตรวจดูข้อมูล
                 </button>
               </td>
             </tr>
@@ -122,14 +113,12 @@
             <tr *ngIf="!loading && referCase.length === 0">
               <td colspan="5" class="p-16 text-center text-slate-400">
                 <i class="fas fa-inbox text-4xl mb-4 block opacity-20"></i>
-                ไม่มีรายการรับเข้าในขณะนี้
               </td>
             </tr>
 
             <tr *ngIf="!loading && referCase.length > 0 && filteredCase.length === 0">
               <td colspan="5" class="p-16 text-center text-slate-400">
                 <i class="fas fa-search text-4xl mb-4 block opacity-20"></i>
-                ไม่พบข้อมูลที่ตรงกับคำค้นหา "{{ searchTerm }}"
               </td>
             </tr>
           </tbody>
@@ -138,3 +127,11 @@
     </div>
   </div>
 </div>
+
+<app-refer-detail
+  *ngIf="selectedCase"
+  [item]="selectedCase"
+  (onClose)="selectedCase = null"
+  (onAccept)="handleAcceptCase($event)"
+>
+</app-refer-detail>
