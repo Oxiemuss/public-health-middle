@@ -13,5 +13,6 @@ export interface ReferCase {
   to_hospital_name: string;
   status: string;
   created_at: string;
+  updated_at: string;
   is_active: string;
 }

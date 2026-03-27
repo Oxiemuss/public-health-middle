@@ -63,7 +63,7 @@
               class="hover:bg-slate-50/80 transition-colors cursor-pointer group"
             >
               <td class="p-4 text-sm text-slate-500">
-                {{ item.created_at | date: 'dd/MM/yyyy HH:mm' }} น.
+                {{ item.created_at | thaiDate : 'short' }}
               </td>
               <td class="p-4">
                 <div class="font-bold text-slate-800">{{ item.patient_name }}</div>
@@ -131,7 +131,20 @@
 <app-refer-detail
   *ngIf="selectedCase"
   [item]="selectedCase"
+  [showAction]="true"
   (onClose)="selectedCase = null"
   (onAccept)="handleAcceptCase($event)"
 >
 </app-refer-detail>
+
+<div *ngIf="isProcess" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+  <div class="relative">
+    <div class="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+    <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+    </div>
+  </div>
+  <p class="mt-4 text-white font-medium tracking-wide animate-pulse">
+    กำลังบันทึกข้อมูล...
+  </p>
+</div>

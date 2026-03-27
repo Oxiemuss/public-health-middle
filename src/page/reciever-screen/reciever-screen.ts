@@ -1,16 +1,18 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReferCase } from '../../app/services/interface/refer.model';
 import { Refer } from '../../app/services/refer/refer';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { ThaiDatePipe } from '../../app/pipes/thai-date-pipe';
 import { ReferDetail } from '../refer-detail/refer-detail';
+
 
 @Component({
   selector: 'app-reciever-screen',
   standalone: true,
   templateUrl: './reciever-screen.html',
-  imports: [CommonModule, DatePipe, FormsModule, ReferDetail],
+  imports: [CommonModule, FormsModule, ReferDetail,ThaiDatePipe],
 })
 export class RecieverScreen implements OnInit {
   private referService = inject(Refer);
@@ -19,51 +21,65 @@ export class RecieverScreen implements OnInit {
   private stopLoading() {
     this.loading = false;
     this.isUpdating = false;
+    this.isProcess = false;
     this.cdr.detectChanges();
   }
+
   selectedCase: ReferCase | null = null;
   referCase: ReferCase[] = [];
   filteredCase: ReferCase[] = [];
   loading = false;
   isUpdating = false;
+  isProcess = false;
   caseCount = 0;
   searchTerm: string = '';
 
-  ngOnInit() {
-    const cache = this.referService.getCacheData();
+ngOnInit() {
+  const cache = this.referService.getCacheData();
 
-    if (cache && cache.length > 0) {
-      this.referCase = cache;
-      this.filteredCase = [...cache];
-      this.loading = false;
-      this.calculateCaseCount();
-      this.cdr.detectChanges();
-      this.stopLoading();
-    } else {
-      this.loadReferrals();
-    }
+  if (cache && cache.length > 0) {
+    const pendingCache = cache.filter((item: any) => item.status === 'pending');
+    
+    this.referCase = pendingCache;
+    this.filteredCase = [...pendingCache];
+    
+    this.calculateCaseCount();
+    this.cdr.detectChanges();
   }
+  this.loadReferrals();
+}
 
   loadReferrals(isManual = false) {
+    this.referCase = [];
+    this.filteredCase = [];
+
     if (isManual) {
       this.isUpdating = true;
-      setTimeout(() => {
-        this.stopLoading();
-      }, 2000);
     } else {
       this.loading = true;
     }
+
     this.referService
       .getAllReferData()
-      .pipe(finalize(() => this.stopLoading()))
+      .pipe(
+        finalize(() => {
+          this.stopLoading();
+        }),
+      )
       .subscribe({
         next: (data) => {
-          this.referCase = data;
-          this.filteredCase = [...data];
+          const pendingCase = (data || []).filter((item) => item.status === 'pending');
+
+          this.referCase = pendingCase;
+          this.filteredCase = [...pendingCase];
+
           this.calculateCaseCount();
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(err);
+          this.referCase = [];
+          this.filteredCase = [];
           this.stopLoading();
         },
       });
@@ -80,9 +96,26 @@ export class RecieverScreen implements OnInit {
   //   window.open(imgUrl, '_blank');
   // }
 
-  handleAcceptCase(item: ReferCase) {
-    console.log('ยืนยันรับเคสไอดี:', item.rid);
-    this.selectedCase = null; 
+  handleAcceptCase(item: any) {
+    this.isProcess = true;
+    const body = {
+      rid: item.rid,
+      status: 'เสร็จแล้ว',
+    };
+
+    this.referService.updateReferStatus(body).subscribe({
+      next: (res) => {
+        console.log('อัปเดตสำเร็จ:', res);
+        this.selectedCase = null; 
+        this.loadReferrals(true);
+        this.isProcess = false; 
+      },
+      error: (err) => {
+        console.error('อัปเดตพลาด:', err);
+        alert('ไม่สามารถอัปเดตสถานะได้');
+        this.isProcess = false;
+      },
+    });
   }
 
   onSearch() {
