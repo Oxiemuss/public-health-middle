@@ -8,6 +8,7 @@
       <h3 class="text-xl font-bold text-white italic">รายละเอียด</h3>
 
       <button
+        *ngIf="showAction"
         (click)="onClose.emit()"
         class="bg-red-500 group flex items-center justify-center w-9 h-9 text-slate-400 hover:bg-red-300 hover:border-red-200 rounded-xl transition-all active:scale-90 shadow-sm"
       >
@@ -39,7 +40,9 @@
 
         <div class="space-y-1">
           <p class="text-xs text-slate-500 uppercase tracking-wider">📆 วันเกิด</p>
-          <p class="font-semibold text-slate-700 text-base">{{ item.birth_date | thaiDate: 'birth'}}</p>
+          <p class="font-semibold text-slate-700 text-base">
+            {{ item.birth_date | thaiDate: 'birth' }}
+          </p>
         </div>
         <div class="space-y-1">
           <p class="text-xs text-slate-500 uppercase tracking-wider">📞 เบอร์โทรศัพท์</p>
@@ -58,7 +61,7 @@
         <div class="space-y-1">
           <p class="text-xs text-slate-500 uppercase tracking-wider">⌚ เวลาที่ส่ง</p>
           <p class="font-semibold text-slate-700 text-base">
-            {{ item.created_at | thaiDate :'full' }}
+            {{ item.created_at | thaiDate: 'full' }}
           </p>
         </div>
 

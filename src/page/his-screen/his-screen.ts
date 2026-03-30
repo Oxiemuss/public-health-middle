@@ -80,8 +80,4 @@ export class HisScreen implements OnInit {
         (item.patient_name && item.patient_name.toLowerCase().includes(search)),
     );
   }
-
-  viewDetail(item: ReferCase) {
-    console.log('ดูรายละเอียดเคสที่จบแล้ว:', item.rid);
-  }
 }
