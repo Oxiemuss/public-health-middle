@@ -1,22 +1,22 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReferCase } from '../../app/services/interface/refer.model';
 import { Refer } from '../../app/services/refer/refer';
-import { CommonModule, } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { BehaviorSubject, finalize, combineLatest, map } from 'rxjs';
 import { ThaiDatePipe } from '../../app/pipes/thai-date-pipe';
 import { ReferDetail } from '../refer-detail/refer-detail';
-
 
 @Component({
   selector: 'app-reciever-screen',
   standalone: true,
   templateUrl: './reciever-screen.html',
-  imports: [CommonModule, FormsModule, ReferDetail,ThaiDatePipe],
+  imports: [CommonModule, FormsModule, ReferDetail, ThaiDatePipe],
 })
 export class RecieverScreen implements OnInit {
   private referService = inject(Refer);
   private cdr = inject(ChangeDetectorRef);
+
 
   private stopLoading() {
     this.loading = false;
@@ -34,28 +34,25 @@ export class RecieverScreen implements OnInit {
   caseCount = 0;
   searchTerm: string = '';
 
-ngOnInit() {
-  const cache = this.referService.getCacheData();
+  ngOnInit() {
+    const cache = this.referService.getCacheData();
 
-  if (cache && cache.length > 0) {
-    const pendingCache = cache.filter((item: any) => item.status === 'pending');
-    
-    this.referCase = pendingCache;
-    this.filteredCase = [...pendingCache];
-    
-    this.calculateCaseCount();
-    this.cdr.detectChanges();
+    if (cache && cache.length > 0) {
+      const pendingCache = cache.filter((item: any) => item.status === 'pending');
+
+      this.referCase = pendingCache;
+      this.filteredCase = [...pendingCache];
+      this.calculateCaseCount();
+      this.cdr.detectChanges();
+    }
+    this.loadReferrals();
   }
-  this.loadReferrals();
-}
 
   loadReferrals(isManual = false) {
-    this.referCase = [];
-    this.filteredCase = [];
 
     if (isManual) {
       this.isUpdating = true;
-    } else {
+    } else if(this.referCase.length === 0) {
       this.loading = true;
     }
 
@@ -106,9 +103,9 @@ ngOnInit() {
     this.referService.updateReferStatus(body).subscribe({
       next: (res) => {
         console.log('อัปเดตสำเร็จ:', res);
-        this.selectedCase = null; 
+        this.selectedCase = null;
         this.loadReferrals(true);
-        this.isProcess = false; 
+        this.isProcess = false;
       },
       error: (err) => {
         console.error('อัปเดตพลาด:', err);
@@ -129,4 +126,6 @@ ngOnInit() {
       (item) => item.cid.includes(search) || item.patient_name.toLowerCase().includes(search),
     );
   }
+
+ 
 }

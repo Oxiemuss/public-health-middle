@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-login-screen',
 standalone: true,
-templateUrl: './login-screen.html'
+templateUrl: './login-screen.html',
+imports: [RouterLink]
 })
 export class LoginScreen {
   role: 'SENDER' | 'RECEIVER' = 'SENDER'; 
@@ -17,4 +20,5 @@ export class LoginScreen {
       this.router.navigate(['/reciever']);
     }
   }
+
 }

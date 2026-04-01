@@ -29,13 +29,22 @@ export class HcScreen implements OnInit {
   isUpdating = false;
 
   ngOnInit() {
+    const cache = this.hcenterService.getCacheData();
+
+    if (cache && cache.length > 0) {
+      const hcData = cache.filter((item) => item.role === 'Sender');
+      this.h_center = [...hcData];
+      this.filteredHCenter = [...hcData];
+      this.cdr.detectChanges();
+    }
+
     this.loadHCenter();
   }
 
   loadHCenter(isManual = false) {
     if (isManual) {
       this.isUpdating = true;
-    } else {
+    } else if (this.h_center.length === 0) {
       this.loading = true;
     }
 
@@ -48,10 +57,19 @@ export class HcScreen implements OnInit {
       )
       .subscribe({
         next: (data) => {
-          const HcData = data.filter((item) => item.role === 'Sender');
-          this.h_center = [...HcData];
-          this.filteredHCenter = [...HcData];
-          this.cdr.detectChanges();
+          if (data) {
+            const hcData = data.filter((item) => item.role === 'Sender');
+
+            this.h_center = [...hcData];
+
+            if (!this.searchTerm) {
+              this.filteredHCenter = [...hcData];
+            } else {
+              this.onSearch();
+            }
+
+            this.cdr.detectChanges();
+          }
         },
         error: (err) => {
           console.error('โหลดข้อมูลศูนย์บริการพลาด:', err);
@@ -68,7 +86,9 @@ export class HcScreen implements OnInit {
     }
 
     this.filteredHCenter = this.h_center.filter(
-      (item) => item.h_name && item.h_name.toLowerCase().includes(search),
+      (item) =>
+        (item.h_name && item.h_name.toLowerCase().includes(search)) ||
+        (item.hcode && item.hcode.includes(search)),
     );
   }
 }

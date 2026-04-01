@@ -66,13 +66,82 @@
     >
       <h2 class="font-bold text-slate-800">ระบบรับส่งต่อผู้ป่วย - รพ.บางปลาม้า</h2>
       <div class="flex items-center gap-4">
-        <button class="relative p-2 text-slate-400 hover:text-blue-600 transition">
-          <img
-            src="bell-solid-full.svg"
-            alt="notification icon"
-            class="w-6 h-6 object-contain group-hover:scale-110 transition-transform"
-          />
-        </button>
+        <div class="relative" (clickOutside)="isNotifyOpen = false">
+          <button
+            (click)="toggleNotify()"
+            class="relative p-2 text-slate-400 hover:scale-110 transition-all active:scale-95 cursor-pointer rounded-full hover:bg-slate-50"
+          >
+            <img src="bell-solid-full.svg" alt="notification icon" class="w-6 h-6 object-contain" />
+
+            <span
+              *ngIf="showNotify"
+              class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-pulse"
+            >
+            </span>
+          </button>
+
+          <div
+            *ngIf="isNotifyOpen"
+            class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[100] animate-in fade-in zoom-in duration-200 origin-top-right"
+          >
+            <div class="p-4 border-b border-slate-50 flex justify-between items-center">
+              <h3 class="font-bold text-slate-800 text-sm">แจ้งเตือนเคสใหม่</h3>
+              <span
+                class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold"
+              >
+                {{ caseCount }} เคส
+              </span>
+            </div>
+
+            <div class="max-h-[350px] overflow-y-auto custom-scrollbar">
+              <div
+                *ngFor="let item of referCase.slice(0, 5)"
+                class="p-4 border-b border-slate-50 hover:bg-blue-50/50 cursor-pointer transition-colors border-l-4 border-l-transparent hover:border-l-blue-500"
+                (click)="isNotifyOpen = false"
+              >
+                <div class="flex gap-3">
+                  <div
+                    class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0"
+                  >
+                    <i class="pi pi-user text-blue-500 text-sm"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-slate-800 truncate">{{ item.patient_name }}</p>
+                    <p class="text-[11px] text-slate-500 truncate">
+                      🏥 {{ item.from_hospital_name }}
+                    </p>
+                    <p class="text-[10px] text-blue-400 mt-1 italic font-medium">
+                      {{ item.created_at | thaiDate: 'short' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="caseCount === 0" class="p-10 text-center">
+                <div
+                  class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"
+                >
+                  <i class="pi pi-bell-slash text-slate-300"></i>
+                </div>
+                <p class="text-xs text-slate-400 font-medium">ยังไม่มีเคสใหม่ในขณะนี้</p>
+              </div>
+            </div>
+            <div class="flex">
+              <a
+                class="block w-full py-3 text-center text-xs font-bold text-blue-600 hover:bg-slate-50 rounded-b-2xl border-t border-slate-50 transition-colors"
+              >
+                ล้างรายการ
+              </a>
+              <a
+                routerLink="/reciever"
+                (click)="isNotifyOpen = false"
+                class="block w-full py-3 text-center text-xs font-bold text-blue-600 hover:bg-slate-50 rounded-b-2xl border-t border-slate-50 transition-colors"
+              >
+                ดูรายการรับเคสทั้งหมด
+              </a>
+            </div>
+          </div>
+        </div>
         <p class="text-black-100 text-sm">รพ.บางปลาม้า</p>
       </div>
     </header>

@@ -17,5 +17,9 @@ export class HCenter {
       }),
     );
   }
+
+  getCacheData(): H_Center[]{
+    return this.H_CenterData.getValue();
+  }
 }
  

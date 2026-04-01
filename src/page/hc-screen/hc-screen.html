@@ -29,7 +29,7 @@
           <input
             type="text"
             [(ngModel)]="searchTerm"
-            placeholder="ค้นหาชื่อ"
+            placeholder="ค้นหาชื่อหรือเลข รพ.สต."
             (input)="onSearch()"
             class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50"
           />
@@ -41,6 +41,7 @@
         <thead class="bg-slate-50/50 text-slate-500 text-xs uppercase">
           <tr>
             <th class="p-4">รายชื่อ รพ.สต.</th>
+            <th class="p-4">เลข รพ.สต.</th>
             <th class="p-4">ตำบล</th>
             <th class="p-4">อำเภอ</th>
             <th class="p-4">จังหวัด</th>
@@ -53,6 +54,7 @@
             class="group transition-all duration-200 hover:bg-blue-200 border-b border-slate-100 last:border-0"
           >
             <td class="p-4 text-start">{{ item.h_name }}</td>
+            <td class="p-4">{{ item.hcode }}</td>
             <td class="p-4">{{ item.h_tumbol }}</td>
             <td class="p-4">{{ item.h_district }}</td>
             <td class="p-4">{{ item.h_province }}</td>
@@ -63,7 +65,7 @@
             <td colspan="5" class="p-10 text-center text-slate-400">ไม่มีรายการ</td>
           </tr>
 
-          <tr *ngIf="h_center.length > 0 && h_center.length === 0 && !loading">
+          <tr *ngIf="h_center.length > 0 && filteredHCenter.length === 0 && !loading">
             <td colspan="5" class="p-10 text-center text-slate-400">
               ไม่พบข้อมูลที่ตรงกับคำค้นหา "{{ searchTerm }}"
             </td>

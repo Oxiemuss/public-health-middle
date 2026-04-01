@@ -6,10 +6,12 @@ import { RecieverScreen } from '../page/reciever-screen/reciever-screen';
 import { HisScreen } from '../page/his-screen/his-screen';
 import { HcScreen } from '../page/hc-screen/hc-screen';
 import { Layout } from '../page/layout/layout';
+import { RegisScreen } from '../page/regis-screen/regis-screen';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginScreen },
+  { path: 'register', component: RegisScreen },
   { path: 'sender', component: SenderScreen },
   {
     path: '',

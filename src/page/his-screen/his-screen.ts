@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { finalize } from 'rxjs';
 import { ReferCase } from '../../app/services/interface/refer.model';
 import { Refer } from '../../app/services/refer/refer';
-import { CommonModule,} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReferDetail } from '../refer-detail/refer-detail';
 import { ThaiDatePipe } from '../../app/pipes/thai-date-pipe';
@@ -10,7 +10,7 @@ import { ThaiDatePipe } from '../../app/pipes/thai-date-pipe';
 @Component({
   standalone: true,
   selector: 'app-his-screen',
-  imports: [CommonModule, FormsModule, ReferDetail,ThaiDatePipe],
+  imports: [CommonModule, FormsModule, ReferDetail, ThaiDatePipe],
   templateUrl: './his-screen.html',
   styleUrl: './his-screen.css',
 })
@@ -32,13 +32,21 @@ export class HisScreen implements OnInit {
   searchTerm: string = '';
 
   ngOnInit() {
+    const cache = this.referService.getHisCacheData();
+
+    if (cache && cache.length > 0) {
+      const hisData = cache.filter((item) => item.status === 'เสร็จแล้ว');
+      this.referCase = [...hisData];
+      this.filteredCase = [...hisData];
+      this.cdr.detectChanges();
+    }
     this.loadReferrals();
   }
 
   loadReferrals(isManual = false) {
     if (isManual) {
       this.isUpdating = true;
-    } else {
+    } else if (this.referCase.length === 0) {
       this.loading = true;
     }
 
@@ -51,17 +59,23 @@ export class HisScreen implements OnInit {
       )
       .subscribe({
         next: (data) => {
-          // 🎯 จุดสำคัญ: กรองเอาเฉพาะเคสที่ status เป็น 'finish'
-          const finishedData = data.filter((item) => item.status === 'เสร็จแล้ว');
+          if (data) {
+            const hisData = data.filter((item) => item.status === 'เสร็จแล้ว');
 
-          this.referCase = finishedData;
-          this.filteredCase = [...finishedData];
+            this.referCase = [...hisData];
 
-          console.log('ประวัติงานที่สำเร็จแล้ว:', finishedData.length, 'เคส');
-          this.cdr.detectChanges();
+            if (!this.searchTerm) {
+              this.filteredCase = [...hisData];
+            } else {
+              this.onSearch();
+            }
+
+            this.cdr.detectChanges();
+          }
         },
         error: (err) => {
-          console.error('โหลดประวัติล้มเหลว:', err);
+          console.error('โหลดข้อมูลศูนย์บริการพลาด:', err);
+          this.stopLoading();
         },
       });
   }
@@ -73,7 +87,6 @@ export class HisScreen implements OnInit {
       return;
     }
 
-    // ค้นหาจากรายการที่ 'finish' แล้วเท่านั้น
     this.filteredCase = this.referCase.filter(
       (item) =>
         (item.cid && item.cid.includes(search)) ||
