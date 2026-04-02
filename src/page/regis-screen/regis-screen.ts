@@ -1,9 +1,75 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../app/services/auth/auth.service';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
+  standalone: true,
   selector: 'app-regis-screen',
-  imports: [],
+  imports: [RouterLink, FormsModule, CommonModule],
   templateUrl: './regis-screen.html',
   styleUrl: './regis-screen.css',
 })
-export class RegisScreen {}
+export class RegisScreen implements OnInit {
+  selectedRole: string = '';
+
+  userData = {
+    user_name: '',
+    pass_word: '',
+    full_name: '',
+    hcode: '',
+    role: '',
+  };
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {}
+
+  setRole(role: string) {
+    this.selectedRole = this.selectedRole === role ? '' : role;
+    console.log('Role', this.selectedRole);
+  }
+
+  onSubmit() {
+    if (!this.selectedRole) {
+      Swal.fire({
+        title: 'กรุณาเลือกสถานที่ทำงาน',
+        text: 'รพ.สต. หรือ รพ.บางปลาม้า?',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'ตกลง',
+      });
+      return;
+    }
+
+    const payload = { ...this.userData, role: this.selectedRole };
+
+    this.authService.register(payload).subscribe({
+      next: (res) => {
+        Swal.fire({
+          title: 'ลงทะเบียนสำเร็จ!',
+          text: 'ยินดีต้อนรับเข้าสู่ระบบ',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          this.router.navigate(['/login']);
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: err.error?.error || 'ไม่สามารถเชื่อมต่อ Server ได้',
+          icon: 'error',
+          confirmButtonColor: '#d33',
+        });
+      },
+    });
+  }
+}

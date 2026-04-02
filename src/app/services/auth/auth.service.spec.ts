@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Refer } from './refer';
+import { AuthService } from './auth.service';
 
-describe('Refer', () => {
-  let service: Refer;
+describe('AuthService', () => {
+  let service: AuthService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Refer);
+    service = TestBed.inject(AuthService);
   });
 
   it('should be created', () => {
