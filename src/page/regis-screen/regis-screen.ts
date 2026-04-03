@@ -37,10 +37,18 @@ export class RegisScreen implements OnInit {
   }
 
   onSubmit() {
-    if (!this.selectedRole) {
+    const { user_name, pass_word, full_name, hcode } = this.userData;
+    if (!user_name || !pass_word || !full_name || !hcode || !this.selectedRole) {
+      let missingField = '';
+      if (!user_name) missingField = 'ชื่อผู้ใช้งาน';
+      else if (!pass_word) missingField = 'รหัสผ่าน';
+      else if (!full_name) missingField = 'ชื่อ-นามสกุล';
+      else if (!hcode) missingField = 'เลขสถานพยาบาล';
+      else if (!this.selectedRole) missingField = 'สถานที่ทำงาน';
+
       Swal.fire({
-        title: 'กรุณาเลือกสถานที่ทำงาน',
-        text: 'รพ.สต. หรือ รพ.บางปลาม้า?',
+        title: 'ข้อมูลไม่ครบถ้วน',
+        text: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingField}`,
         icon: 'warning',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'ตกลง',

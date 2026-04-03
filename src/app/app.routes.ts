@@ -7,19 +7,21 @@ import { HisScreen } from '../page/his-screen/his-screen';
 import { HcScreen } from '../page/hc-screen/hc-screen';
 import { Layout } from '../page/layout/layout';
 import { RegisScreen } from '../page/regis-screen/regis-screen';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginScreen },
   { path: 'register', component: RegisScreen },
-  { path: 'sender', component: SenderScreen },
+  { path: 'sender', component: SenderScreen,},
+  // { path: 'sender', component: SenderScreen, canActivate: [authGuard] },
   {
     path: '',
     component: Layout,
     children: [
-      { path: 'reciever', component: RecieverScreen },
-      { path: 'history', component: HisScreen },
-      { path: 'hclist', component: HcScreen },
+      { path: 'reciever', component: RecieverScreen,},
+      { path: 'history', component: HisScreen,},
+      { path: 'hclist', component: HcScreen,},
     ],
   },
   { path: '**', redirectTo: 'login' },

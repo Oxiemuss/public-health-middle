@@ -3,23 +3,14 @@
     class="max-w-md w-full bg-white rounded-3xl shadow-2xl shadow-slate-300/50 overflow-hidden border border-slate-100"
   >
     <div class="bg-blue-600 p-8 text-center">
-      <div
-        class="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-4 backdrop-blur-sm"
-      >
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-          />
-        </svg>
+      <div class="inline-flex items-center justify-center w-35 h-35">
+        <img src="image.png" alt="logo" class="w-35 h-35 object-contain" />
       </div>
       <h1 class="text-2xl font-bold text-white tracking-tight">ระบบรับ-ส่งข้อมูลผู้ป่วย</h1>
     </div>
 
     <div class="p-8">
-      <form class="space-y-6">
+      <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onLogin()">
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1 text-left"
             >ชื่อผู้ใช้งาน</label
@@ -34,6 +25,7 @@
               </svg>
             </span>
             <input
+              formControlName="user_name"
               type="text"
               placeholder="ชื่อผู้ใช้งาน"
               class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
@@ -53,7 +45,8 @@
               </svg>
             </span>
             <input
-              type="password"
+              formControlName="pass_word"
+              type="text"
               placeholder="••••••••"
               class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             />

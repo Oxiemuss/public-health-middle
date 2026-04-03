@@ -110,7 +110,7 @@ export class SenderScreen implements OnInit {
       }
 
       this.referService.sendReferData(formData).subscribe({
-        next: (res) => {
+        next: () => {
           // alert('ส่งข้อมูลผู้ป่วยสำเร็จ!');
           this.resetForm();
           this.isSubmiting = false;
