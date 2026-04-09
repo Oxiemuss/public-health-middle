@@ -1,24 +1,48 @@
-// auth.interceptor.ts
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import Swal from 'sweetalert2';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
-  
-  // เช็กก่อนว่ารันอยู่ใน Browser ไหม?
+  const router = inject(Router);
+
+  if (req.url.includes('/login')) {
+    return next(req);
+  }
+
+  let authReq = req;
+
   if (isPlatformBrowser(platformId)) {
     const token = localStorage.getItem('AccessToken');
     if (token) {
-      const cloned = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
+      authReq = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
       });
-      return next(cloned);
     }
   }
 
-  // ถ้าเป็นฝั่ง Server หรือไม่มี Token ก็ปล่อยผ่านไปปกติ
-  return next(req);
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 || error.status === 403) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'เซสชั่นหมดอายุ',
+          text: 'กรุณาเข้าสู่ระบบใหม่อีกครั้งเพื่อความปลอดภัย',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'ตกลง',
+          allowOutsideClick: false,
+        }).then(() => {
+          if (isPlatformBrowser(platformId)) {
+            localStorage.clear();
+            router.navigate(['/login']);
+          }
+        });
+      }
+
+      return throwError(() => error);
+    }),
+  );
 };

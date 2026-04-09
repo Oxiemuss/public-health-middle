@@ -10,18 +10,24 @@ import { RegisScreen } from '../page/regis-screen/regis-screen';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginScreen },
   { path: 'register', component: RegisScreen },
-  { path: 'sender', component: SenderScreen,},
-  // { path: 'sender', component: SenderScreen, canActivate: [authGuard] },
+  {
+    path: 'sender',
+    component: SenderScreen,
+    canActivate: [authGuard],
+    data: { expectedRole: 'user' },
+  },
   {
     path: '',
     component: Layout,
+    canActivate: [authGuard],
+    data: { expectedRole: 'admin' },
     children: [
-      { path: 'reciever', component: RecieverScreen,},
-      { path: 'history', component: HisScreen,},
-      { path: 'hclist', component: HcScreen,},
+      { path: 'reciever', component: RecieverScreen },
+      { path: 'history', component: HisScreen },
+      { path: 'hclist', component: HcScreen },
+      { path: '', pathMatch: 'full', redirectTo: 'reciever' },
     ],
   },
   { path: '**', redirectTo: 'login' },

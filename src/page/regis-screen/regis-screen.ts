@@ -36,48 +36,62 @@ export class RegisScreen implements OnInit {
     console.log('Role', this.selectedRole);
   }
 
-  onSubmit() {
-    const { user_name, pass_word, full_name, hcode } = this.userData;
-    if (!user_name || !pass_word || !full_name || !hcode || !this.selectedRole) {
-      let missingField = '';
-      if (!user_name) missingField = 'ชื่อผู้ใช้งาน';
-      else if (!pass_word) missingField = 'รหัสผ่าน';
-      else if (!full_name) missingField = 'ชื่อ-นามสกุล';
-      else if (!hcode) missingField = 'เลขสถานพยาบาล';
-      else if (!this.selectedRole) missingField = 'สถานที่ทำงาน';
+onSubmit() {
+  const { user_name, pass_word, full_name, hcode } = this.userData;
+  
+  // 1. Validation เช็กข้อมูลเบื้องต้น
+  if (!user_name || !pass_word || !full_name || !hcode || !this.selectedRole) {
+    let missingField = '';
+    if (!user_name) missingField = 'ชื่อผู้ใช้งาน';
+    else if (!pass_word) missingField = 'รหัสผ่าน';
+    else if (!full_name) missingField = 'ชื่อ-นามสกุล';
+    else if (!hcode) missingField = 'เลขสถานพยาบาล';
+    else if (!this.selectedRole) missingField = 'สถานที่ทำงาน';
 
-      Swal.fire({
-        title: 'ข้อมูลไม่ครบถ้วน',
-        text: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingField}`,
-        icon: 'warning',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'ตกลง',
-      });
-      return;
-    }
-
-    const payload = { ...this.userData, role: this.selectedRole };
-
-    this.authService.register(payload).subscribe({
-      next: (res) => {
-        Swal.fire({
-          title: 'ลงทะเบียนสำเร็จ!',
-          text: 'ยินดีต้อนรับเข้าสู่ระบบ',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-        }).then(() => {
-          this.router.navigate(['/login']);
-        });
-      },
-      error: (err) => {
-        Swal.fire({
-          title: 'เกิดข้อผิดพลาด',
-          text: err.error?.error || 'ไม่สามารถเชื่อมต่อ Server ได้',
-          icon: 'error',
-          confirmButtonColor: '#d33',
-        });
-      },
+    Swal.fire({
+      title: 'ข้อมูลไม่ครบถ้วน',
+      text: `กรุณากรอกข้อมูลให้ครบถ้วน: ${missingField}`,
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'ตกลง',
     });
+    return;
   }
+
+  // 🚩 2. ยิง Swal Loading ทันที (ป้องกันการกดซ้ำ)
+  Swal.fire({
+    title: 'กำลังบันทึกข้อมูล...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading(); // แสดงตัวหมุน
+    },
+  });
+
+  const payload = { ...this.userData, role: this.selectedRole };
+
+  this.authService.register(payload).subscribe({
+    next: (res) => {
+      // 🚩 3. ปิด Loading และโชว์ Success
+      Swal.fire({
+        title: 'ลงทะเบียนสำเร็จ!',
+        text: 'ยินดีต้อนรับเข้าสู่ระบบ',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
+    },
+    error: (err) => {
+      // 🚩 4. ปิด Loading และโชว์ Error
+      Swal.fire({
+        title: 'เกิดข้อผิดพลาด',
+        text: err.error?.error || 'ไม่สามารถลงทะเบียนได้ หรือชื่อผู้ใช้อาจมีอยู่แล้ว',
+        icon: 'error',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'ลองอีกครั้ง'
+      });
+    },
+  });
+}
 }

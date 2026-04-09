@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../app/services/auth/auth.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login-screen',
   standalone: true,
@@ -31,41 +32,43 @@ export class LoginScreen implements OnInit {
 
   onLogin() {
     if (this.loginForm.valid) {
-      const val = this.loginForm.getRawValue();
-      const loginData = {
-        user_name: val.user_name,
-        pass_word: val.pass_word,
-      };
-      this.authService.login(loginData).subscribe({
-        next: (res: any) => {
-          if (res.token) this.resetForm();
-          console.log('data', loginData);
-        },
-        error: (err) => {
-          console.error('Error Detail', err);
+      const loginData = this.loginForm.getRawValue();
+
+      Swal.fire({
+        title: 'กำลังเข้าสู่ระบบ...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         },
       });
-    }
-    this.getRoleFormStorage();
-  }
 
-  getRoleFormStorage() {
-    if (isPlatformBrowser(this.platformId)) {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        try {
-          const userDataJson = JSON.parse(userData);
+      this.authService.login(loginData).subscribe({
+        next: (res: any) => {
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('AccessToken', res.token);
+            localStorage.setItem('user', JSON.stringify(res.user));
 
-          if (userDataJson.role === 'admin') {
-            this.router.navigate(['/reciever']);
+            Swal.close();
+
+            const userRole = res.user.role;
+
+            if (userRole === 'admin') {
+              console.log('Redirecting to Admin (Receiver)...');
+              this.router.navigate(['/reciever']);
+            } else {
+              console.log('Redirecting to User (Sender)...');
+              this.router.navigate(['/sender']);
+            }
           }
-          if (userDataJson.role === 'user') {
-            this.router.navigate(['/sender']);
-          }
-        } catch (e) {
-          console.error('Error parsing user data from localStorage', e);
-        }
-      }
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'เข้าสู่ระบบไม่สำเร็จ',
+            text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+          });
+        },
+      });
     }
   }
 

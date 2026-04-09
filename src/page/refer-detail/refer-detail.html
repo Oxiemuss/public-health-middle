@@ -91,6 +91,7 @@
         <div *ngIf="item.refer_pic" class="space-y-2">
           <p class="text-sm font-semibold text-slate-600">📄 ใบส่งตัว (Refer)</p>
           <div
+            (click)="viewImage(item.refer_pic)"
             class="group relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm cursor-zoom-in bg-white p-1"
           >
             <img
@@ -106,6 +107,7 @@
         <div *ngIf="item.cid_pic" class="space-y-2">
           <p class="text-sm font-semibold text-slate-600">🪪 บัตรประชาชน</p>
           <div
+            (click)="viewImage(item.cid_pic)"
             class="group relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm cursor-zoom-in bg-white p-1"
           >
             <img
