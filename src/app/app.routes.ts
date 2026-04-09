@@ -10,6 +10,7 @@ import { RegisScreen } from '../page/regis-screen/regis-screen';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginScreen },
   { path: 'register', component: RegisScreen },
   {
@@ -19,7 +20,7 @@ export const routes: Routes = [
     data: { expectedRole: 'user' },
   },
   {
-    path: '',
+    path: 'main',
     component: Layout,
     canActivate: [authGuard],
     data: { expectedRole: 'admin' },
