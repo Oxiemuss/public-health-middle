@@ -20,7 +20,7 @@ export const routes: Routes = [
     data: { expectedRole: 'user' },
   },
   {
-    path: 'main',
+    path: '',
     component: Layout,
     canActivate: [authGuard],
     data: { expectedRole: 'admin' },
