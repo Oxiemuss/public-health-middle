@@ -32,9 +32,11 @@ export class SenderScreen implements OnInit {
 
   ngOnInit() {
     this.initForm();
-    this.getUserData();
-    
-    this.setupAgeCalculation();
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.getUserData();
+      this.setupAgeCalculation();
+    }
   }
 
   initForm() {
@@ -101,7 +103,7 @@ export class SenderScreen implements OnInit {
         icon: 'error',
         title: 'ข้อมูลไม่ครบถ้วน',
         text: 'กรุณากรอกข้อมูลผู้ป่วยให้ครบตามช่องที่กำหนด',
-        confirmButtonColor: '#3085d6'
+        confirmButtonColor: '#3085d6',
       });
       return;
     }
@@ -113,7 +115,7 @@ export class SenderScreen implements OnInit {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     const val = this.senderForm.getRawValue();
@@ -134,7 +136,7 @@ export class SenderScreen implements OnInit {
     formData.append('rlt_name', val.rlt_name || '');
     formData.append('rlt_contact_number', val.rlt_contact_number || '');
     formData.append('status', 'pending');
-    
+
     // 🚩 เพิ่มคนสร้าง (ดึง ID จาก currentUser)
     if (this.currentUser?.id) {
       formData.append('create_by', this.currentUser.id);
@@ -151,7 +153,7 @@ export class SenderScreen implements OnInit {
           title: 'ส่งข้อมูลสำเร็จ!',
           text: 'ข้อมูลผู้ป่วยถูกส่งเข้าสู่ระบบแล้ว',
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         }).then(() => {
           this.resetForm();
         });
@@ -162,9 +164,9 @@ export class SenderScreen implements OnInit {
           icon: 'error',
           title: 'เกิดข้อผิดพลาด',
           text: err.error?.message || 'ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
-          confirmButtonColor: '#d33'
+          confirmButtonColor: '#d33',
         });
-      }
+      },
     });
   }
 
