@@ -31,8 +31,9 @@ export class SenderScreen implements OnInit {
   readonly TO_HCODE = '11291';
 
   ngOnInit() {
-    this.getUserData();
     this.initForm();
+    this.getUserData();
+    
     this.setupAgeCalculation();
   }
 
