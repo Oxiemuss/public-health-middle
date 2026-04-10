@@ -12,14 +12,14 @@ import Swal from 'sweetalert2';
 })
 export class SenderScreen implements OnInit {
   private fb = inject(FormBuilder);
-  private referService = inject(Refer); // ชื่อ Service ของพี่
+  private referService = inject(Refer); 
   private cdr = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
 
   senderForm!: FormGroup;
   currentUser: any = null;
 
-  // 🚩 ลบ isSubmiting, isUploading ออกไปเลยครับ เพราะใช้ Swal คุมแล้ว
+  
   referralFile: File | null = null;
   idCardFile: File | null = null;
   referralPreview: string | null = null;
